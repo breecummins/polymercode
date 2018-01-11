@@ -1,0 +1,12 @@
+import cPickle, os
+
+def loadPickle(basename,basedir):
+    try:
+        os.mkdir(basedir+basename)
+    except:
+        pass
+    F = open(basedir+basename+'.pickle', 'r')
+    mydict = cPickle.Unpickler(F).load()
+    F.close()
+    return mydict
+

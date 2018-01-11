@@ -1,0 +1,83 @@
+\documentclass[12pt]{article}
+
+\usepackage[top=0.75in,bottom=0.75in,left=0.5in,right=0.5in]{geometry}
+\usepackage{amsmath,amssymb,multirow,graphicx, parskip}
+
+\newcommand{\bee}[1]{\begin{equation} #1 \end{equation}}
+\newcommand{\baa}[1]{\begin{eqnarray} #1 \end{eqnarray}}
+\newcommand{\bees}[1]{\begin{equation*} #1 \end{equation*}}
+\newcommand{\baas}[1]{\begin{eqnarray*} #1 \end{eqnarray*}}
+
+\newcommand{\pd}[2]{\ensuremath{\frac{\partial #1}{\partial #2}}}
+\newcommand{\dd}[2]{\ensuremath{\frac{d #1}{d #2}}}
+
+\newcommand{\bx}{{\mathbf x}}
+\newcommand{\bz}{{\mathbf z}}
+\newcommand{\bl}{{\pmb \ell}}
+\newcommand{\bu}{{\mathbf u}}
+\newcommand{\bv}{{\mathbf v}}
+\newcommand{\bq}{{\mathbf q}}
+\newcommand{\bp}{{\mathbf p}}
+\newcommand{\bg}{{\mathbf g}}
+\newcommand{\ff}{{\mathbf f}}
+\newcommand{\bS}{{\mathbf S}}
+\newcommand{\bI}{{\mathbf I}}
+\newcommand{\bA}{{\mathbf A}}
+\newcommand{\bG}{{\mathbf G}}
+\newcommand{\bF}{{\mathbf F}}
+\newcommand{\bP}{{\mathbf P}}
+\newcommand{\bQ}{{\mathbf Q}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\Ge}{\bG_\eps}
+\newcommand{\Gec}{G_\eps}
+
+
+\begin{document}
+	
+	In a Lagrangian particle method the points are going to become disordered, leading to increasing inaccuracy in the solution. We will need to periodically reorder the points into a regular grid. The interpolation function that we will use is the same one as used in Ricardo's 2000 paper (`A vortex/impulse method for immersed boundary motion in high reynolds number flows'): 
+	
+	\[ W_4(r) = \left\{ \begin{array}{cr} 1 - \frac{5}{2}r^2 + \frac{3}{2} r^3, & 0 \leq r < 1 \\ \frac{1}{2} \left(2 - r \right)^2 (1-r), & 1 \leq r < 2 \\ 0, & 2 \leq r \end{array} \right. . \]
+	% 
+	$W_4$ is a $C^1$ function with an integral of $1/2$ and a zero at $r=1$. $W_4$ is positive on $[0,1)$ and negative on $(1,2)$. The 4 in $W_4$ indicates that values will be spread to the nearest four points on the new grid (in each of two dimensions). This function has been chosen to work as a tensor product in two dimensions, $W_4(r_x)W_4(r_y)$. The function $2W_4$ will work in one dimension, and a tensor product $(2/3) W_4(r_x)(2/3) W_4(r_y)(2/3) W_4(r_z)$ will interpolate in three dimensions.
+	
+	Let $(x_k,y_j)$ be a set of (possibly) disordered points that need to be regridded with associated function values $\omega_{kj}$. We assume that the $\omega_{kj}$ come from a sufficiently smooth function $\omega(\bx)$. Let $\bz = (z_1,z_2)$ be a point on a regular grid of spacing $h$. If $r_{x,k} = |x_k - z_1|/h$ and $r_{y,j}= |y_j - z_2|/h$, then 
+	
+	\[ \omega(\bz) = \sum\limits_{k,j} \omega_{kj} W_4(r_{x,k})W_4(r_{y,j}) + O(h^3) \]
+	% 
+	and 
+	\[ \omega(\bz) \approx \sum\limits_{k,j} \omega_{kj} W_4(r_{x,k})W_4(r_{y,j}) \]
+	% 
+	is our numerical interpolating procedure.
+	
+	For randomly disordered points, this approximation does not work very well, in that spurious peaks and valleys appear after interpolating. These can be smoothed out by stretching the interpolation function to a factor of $k$ points away: 
+
+	\[ W_{4k}(r) = \dfrac{1}{k}\left\{ \begin{array}{cr} 1 - \dfrac{5}{2}\left(\dfrac{r}{k}\right)^2 + \dfrac{3}{2} \left(\dfrac{r}{k}\right)^3, & 0 \leq r < k \\ &
+	 \\ \dfrac{1}{2} \left(2 - \dfrac{r}{k} \right)^2 \left(1-\dfrac{r}{k} \right), & k \leq r < 2k \\ & \\ 0, & 2k \leq r \end{array} \right. . \]
+% 
+	It is easy to check that $W_{4k}$ will spread values to the nearest $4k$ points in each dimension, is a $C^1$ function with an integral of $1/2$ and a zero at $r=k$. $W_{4k}$ is positive on $[0,k)$ and negative on $(k,2k)$.
+	
+	An alternative to stretching $W_4$ is to use a function that is constructed to interpolate to greater numbers of points. I think there are examples in Monaghan (1985). Ricardo says that $W_4$ is sufficient for smooth incompressible flows, but I should check for spurious peaks and valleys.
+	
+	\textbf{In my specific case:} I want to use this function to interpolate components of the stress tensor to a new grid. Since the rest state of the stress is the identity matrix, I need to interpolate the \textbf{deviation} of the stress from the identity onto points that have the identity as a default value. Additionally, it is important to interpolate the Eulerian stress, not the Lagrangian stress, since I expect continuity only in an Eulerian frame (the regridding is a discontinuity in Lagrangian variables). It won't be necessary to transform back to Lagrangian coordinates, because the transformation is trivial (multiplication by the identity because there is no deformation in the new grid). I also need to choose a threshold for deciding when to regrid during a Lagrangian problem. This could be done at regular intervals, when the stress gets close to the edge, or when the determinant of the deformation matrix drifts too far from 1. 
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

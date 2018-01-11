@@ -1,0 +1,335 @@
+\documentclass[12pt]{article}
+
+\usepackage[top=0.75in,bottom=0.75in,left=0.5in,right=0.5in]{geometry}
+\usepackage{amsmath,amssymb,multirow,graphicx}
+
+\newcommand{\bee}[1]{\begin{equation} #1 \end{equation}}
+\newcommand{\baa}[1]{\begin{eqnarray} #1 \end{eqnarray}}
+\newcommand{\bees}[1]{\begin{equation*} #1 \end{equation*}}
+\newcommand{\baas}[1]{\begin{eqnarray*} #1 \end{eqnarray*}}
+
+\newcommand{\pd}[2]{\ensuremath{\frac{\partial #1}{\partial #2}}}
+\newcommand{\dd}[2]{\ensuremath{\frac{d #1}{d #2}}}
+
+\newcommand{\bx}{{\mathbf x}}
+\newcommand{\ba}{{\mathbf a}}
+\newcommand{\bl}{{\pmb \ell}}
+\newcommand{\bu}{{\mathbf u}}
+\newcommand{\bv}{{\mathbf v}}
+\newcommand{\bq}{{\mathbf q}}
+\newcommand{\bp}{{\mathbf p}}
+\newcommand{\bg}{{\mathbf g}}
+\newcommand{\ff}{{\mathbf f}}
+\newcommand{\bS}{{\mathbf S}}
+\newcommand{\bI}{{\mathbf I}}
+\newcommand{\bA}{{\mathbf A}}
+\newcommand{\bG}{{\mathbf G}}
+\newcommand{\bF}{{\mathbf F}}
+\newcommand{\bP}{{\mathbf P}}
+\newcommand{\bQ}{{\mathbf Q}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\Ge}{\bG_\eps}
+\newcommand{\Gec}{G_\eps}
+
+
+\begin{document}
+	\section{Introduction}
+	
+	We seek to develop a particle method for slow, viscoelastic flow as modeled by the Stokes equations for an Oldroyd-B fluid.  The aim is to see if singularities develop in the flow as they do when the equations are solved in an Eulerian framework (see Mike Shelley's paper).
+	
+	% \section{Derivation of Oldroyd-B model}
+	\section{Eulerian to Lagrangian change of variables}
+	
+	In Eulerian form, incompressible flow in an Oldroyd-B fluid is given by
+	\baas{
+	\rho\frac{\text{D} \bu}{\text{D}t} &=& -\nabla_x p + \mu\nabla_x^2\bu + \nabla_x \cdot \bS + \ff(\bx,t) \\
+	\nabla_x \cdot \bu &=& 0 \\
+	\tau\bS^\nabla &=& -\left( \bS - G\bI\right).
+	}
+	See the appendix for notation. If we nondimensionalize $\bx$ by $L$, $\bu$ by $V$, $t$ by $L/V$, $\bS$ by $G$, $p$ by $\mu V /L$, and $\ff$ by $\mu V/L^2$, the resulting dimensionless equations are
+	\baas{
+	Re\frac{\text{D} \bu}{\text{D}t} &=& -\nabla_x p + \nabla_x^2\bu + \beta \nabla_x \cdot \bS + \ff(\bx,t) \\
+	\nabla_x \cdot \bu &=& 0 \\
+	Wi\,\bS^\nabla &=& -\left( \bS - \bI\right),
+	}
+	where all the variables are now dimensionless variables. $\beta = LG/\mu V$ is the ratio of polymer stresses to fluid stresses. When $Re = \rho V L/ \mu \ll 1$, the term on the LHS of the first equation may be dropped; this is the Stokes flow assumption. Then the equations are
+	\baas{
+	 \nabla_x^2\bu &=& \nabla_x p - \beta \nabla_x \cdot \bS - \ff(\bx,t) \\
+	\nabla_x \cdot \bu &=& 0 \\
+	Wi\,\bS^\nabla &=& -\left( \bS - \bI\right).
+	}
+	There is a fundamental solution to Stokes flow, which allows for a convolution type solution to the first and second equations, so that the coupled system becomes:
+	\baa{
+	 \bu(\bx) &=& \int_{\Omega(t)} \bG(\bx - \bx') \left( \beta \nabla_x \cdot \bS(\bx') + \ff(\bx',t) \right) d\bx' \label{eqn:Eulervel}\\
+	Wi\,\bS^\nabla &=& -\left( \bS - \bI\right), \label{eqn:Eulerstress}
+	}
+	where the kernel $\bG$ enforces the incompressibility condition.
+	
+	Let's rewrite this in terms of Lagrangian variables. First, let $\bl(\ba,t)$ be the Lagrangian flow map indexed by the initial positions $\ba$. Then $\partial\bl/\partial t=\bu(\bl(\ba,t)) \equiv \bv(\ba,t)$. Let $\bF = \nabla_a \bl$ be the Jacobian of the flow map, also called the deformation tensor. The time derivative is 
+	\baas{
+	\partial \bF/\partial t &=& \nabla_a \partial\bl/\partial t \\
+	&=& \nabla_a \bv(\ba,t) \\
+	&=& \nabla_a \bu(\bl(\ba,t)) \\
+	&=& \nabla_x \bu \big\vert_{\bl(\ba,t)} \nabla_a \bl \\
+	&=& \nabla_x \bu \big\vert_{\bl(\ba,t)} \bF.
+	}
+	Since we assume incompressible flow, $\jmath = \det \bF(\bl,t) = 1 \; \forall t$, implying that $\bF$ is always invertible. So $\bF\bF^{-1} = \bI$ implies $(\partial\bF/\partial t) \,\bF^{-1} + \bF\,(\partial\left( \bF^{-1}\right)/\partial t )= 0$. Using this identity, we may transform Eq.~\eqref{eqn:Eulerstress}. We begin by showing that $\bF^{-1}S^\nabla\bF^{-T} = \text{D}(\bF^{-1}S\bF^{-T})/\text{D} t$:
+	\baas{
+	\bS^\nabla &=& \frac{\text{D} \bS}{\text{D}t} - \left((\nabla_x\bu)\,\bS + \bS\,(\nabla_x\bu)^T \right) \\
+	&=& \frac{\text{D} \bS}{\text{D}t} - \left((\nabla_x\bu\bF\bF^{-1})\,\bS + \bS\,(\nabla_x\bu\bF\bF^{-1})^T \right) \\
+	&=& \frac{\text{D} \bS}{\text{D}t} - \left(\pd{\bF}{t}\bF^{-1}\,\bS + \bS\,\left(\pd{\bF}{t}\bF^{-1}\right)^T \right) \\
+	&=& \frac{\text{D} \bS}{\text{D}t} - \left(-\bF\pd{\bF^{-1}}{t}\,\bS - \bS\,\left(\bF\pd{\bF^{-1}}{t}\right)^T \right)  \\
+	\Rightarrow \bF^{-1}\bS^\nabla\bF^{-T} &=& \bF^{-1}\frac{\text{D} \bS}{\text{D}t}\bF^{-T} + \bF^{-1}\bF\pd{\bF^{-1}}{t}\,\bS\bF^{-T} + \bF^{-1}\bS\,\left(\pd {\bF^{-1}}{t}\right)^T \bF^T \bF^{-T} \\
+	 &=& \bF^{-1}\frac{\text{D} \bS}{\text{D}t}\bF^{-T} + \pd {\bF^{-1}}{t}\,\bS\bF^{-T} + \bF^{-1}\bS\,\pd {\bF^{-T}}{t} \\
+	&=& \frac{\text{D}\left(\bF^{-1}\bS\bF^{-T}\right)}{\text{D} t}.
+	}
+	Now left-multiplying Eq.~\eqref{eqn:Eulerstress} by $\bF^{-1}$ and right-multiplying by $\bF^{-T}$, we have
+	\baas{
+	Wi\,\bF^{-1}\bS^\nabla\bF^{-T} &=& -\bF^{-1}\left( \bS - \bI \right)\bF^{-T} \\
+	\Rightarrow \frac{\text{D}\left(\bF^{-1}\bS\bF^{-T}\right)}{\text{D} t} &=& -Wi^{-1}\left( \bF^{-1}\bS\bF^{-T} - \bF^{-1}\bF^{-T} \right).
+	}
+	The quantity $\bP = \bS\bF^{-T}$ is a Lagrangian quantity called the first Piola-Kirchoff stress tensor. Using $\bP$ and continuing with our manipulations,
+	\baas{
+	\frac{\text{D}\bF^{-1}\bP}{\text{D} t} &=& -Wi^{-1}\left( \bF^{-1}\bP - \bF^{-1}\bF^{-T} \right) \\
+	\Rightarrow \pd{\bF^{-1}}{t}\bP + \bF^{-1}\pd{\bP}{t} &=& -Wi^{-1}\left( \bF^{-1}\bP - \bF^{-1}\bF^{-T} \right) \\
+	\Rightarrow  \pd{\bP}{t} &=& -\bF\pd{\bF^{-1}}{t}\bP-Wi^{-1}\left( \bP - \bF^{-T} \right) \\
+	& =& \pd{\bF}{t}\bF^{-1}\bP - Wi^{-1}\left( \bP - \bF^{-T} \right) \\
+	& =& \left(\nabla_a \bv\right)\bF^{-1}\bP - Wi^{-1}\left( \bP - \bF^{-T} \right).
+	}
+	This is the evolution equation for $\bP$ in Lagrangian variables, replacing the Eulerian equation for $\bS$. 
+	
+	Now for Eq.~\eqref{eqn:Eulervel}. Letting $\bx$ and $\bx'$ be represented by the flow maps $\bl(\ba,t)$ and $\bl(\ba',t)$, we have:
+	\bees{
+	 \bv(\ba,t) = \int_{\Omega(t)} \bG(\bl(\ba,t) - \bl(\ba',t)) \left( \beta \nabla_{x'} \cdot \bS(\bl(\ba',t)) + \ff(\bl(\ba',t),t) \right) d\bl(\ba',t) .
+	} 
+	In order to have this whole system in the Lagrangian frame, we need to rewrite $\int_{\Omega(t)} \nabla_{x'} \cdot \bS$. 
+	
+	It will be useful to do manipulations with the three dimensional tensors $\nabla_x \bS$ and $\nabla_a \bS$. These objects are tricky to deal with in vector notation, so we will resort to index notation with the summation convention. The summation convention means that repeated indices in a product denote a sum over that index; e.g. $\pd{u_i}{x_i} \equiv \sum_i \pd{u_i}{x_i} = \nabla \cdot \bu$. In index notation,
+	\baas{
+	(\nabla_a \bS)_{ijk} &=& \pd{S_{ij}}{a_k} = \pd{S_{ij}}{x_l}\pd{x_l}{a_k} = \pd{S_{ij}}{x_l}F_{lk} \\
+	\Rightarrow (\nabla_x \bS)_{ijk} &=& \pd{S_{ij}}{x_l} = \pd{S_{ij}}{a_k}F^{-1}_{kl}.
+	}
+	Using the above, we may write 
+	\bees{
+	(\nabla_x \cdot \bS)_i = \pd{S_{ij}}{x_j} = \pd{S_{ij}}{a_k}F^{-1}_{kj}.
+	}
+	We will also need the identity $\nabla_a \cdot (\bF^{-T}\jmath) = 0$ (I don't know the derivation of this identity), where $\jmath = \det \bF$. In index notation, this identity is $\partial (F^{-1}_{kj} \jmath) /\partial a_k = 0$. Then, since $\jmath$ is scalar and assuming it is nonzero,
+	\baas{
+	(\nabla_x \cdot \bS)_i &=& \jmath^{-1} \,(\nabla_x \cdot \bS)_i \, \jmath \\
+	&=& \jmath^{-1} \,\pd{S_{ij}}{a_k}F^{-1}_{kj} \,\jmath \\
+	&=& \jmath^{-1}\, \pd{S_{ij}}{a_k}F^{-1}_{kj} \,\jmath + \jmath^{-1}\, S_{ij} \pd{(F^{-1}_{kj} \jmath)}{a_k} \\
+	&=& \jmath^{-1}\, \pd{}{a_k}\left(S_{ij}F^{-1}_{kj} \,\jmath\right) \\
+	&=& \jmath^{-1}\, \pd{}{a_k}\left(S_{ij}F^{-T}_{jk} \,\jmath\right) \\
+	&=& \jmath^{-1}\,\pd{P_{ik}}{a_k}\\
+	&=& \jmath^{-1}\,(\nabla_a \cdot \bP)_i.
+	}
+	In the above, we have retained $\jmath$ even though it is 1 in the incompressible case. This is to make the derivation a little more general, but it requires that $\bP := \bS\,\bF^{-T}\,\jmath$, instead of $\bP := \bS\,\bF^{-T}$ as we stated earlier. Note that since $\jmath = 1$, these definitions agree in the incompressible case. We now transform the integral:
+	\bees{
+	\int_{\Omega(t)} \nabla_x \cdot \bS \,d\bx = \int_{\Omega(0)} \jmath^{-1}\,\nabla_a \cdot \bP \;\jmath \,d\ba = \int_{\Omega(0)} \nabla_a \cdot \bP \, d\ba,
+	}
+	so that the Lagrangian system is 
+	\baa{
+	\bv(\ba,t) &=& \int_{\Omega(0)} \bG(\bl(\ba,t) - \bl(\ba',t)) \left( \beta \nabla_{a'} \cdot \bP(\ba',t) + \ff(\bl(\ba',t),t) \right) d\ba' \label{eqn:L1}\\
+	\pd{\bP}{t} &=& \left(\nabla_a \bv \right)\bF^{-1}\bP - Wi^{-1}\left( \bP - \bF^{-T} \right) \nonumber. 
+	}
+	
+	\section{The kernel $\bG$}
+	
+	The Stokeslet kernel $\bG$ is singular, and although the integrals can be calculated exactly over domains and curves in 2D, special care must be taken. Additionally, if there are isolated points where forces exist, the velocity at these points is unbounded. Instead of using $\bG$, we use a regularized kernel $\Ge$, that depends on a small, positive parameter $\eps$: 
+	\bees{
+	\Ge(\bl - \bl') = \frac{1}{4\pi\mu} \begin{bmatrix} h_1(r) + h_2(r)(\ell_1 - \ell_1')^2 & h_2(r)(\ell_1 - \ell_1')(\ell_2 - \ell_2') \\ h_2(r)(\ell_1 - \ell_1')(\ell_2 - \ell_2') & h_1(r) + h_2(r)(\ell_2 - \ell_2')^2 \end{bmatrix} 
+	}
+	where $\bl = \bl(\ba,t) = [\ell_1, \ell_2]$, $\bl' = \bl(\ba',t) = [\ell_1', \ell_2']$, and 
+	\baas{
+	r^2 &=& (\ell_1 - \ell_1')^2 + (\ell_2 - \ell_2')^2 \\ 
+	h_1(r) &=& - \frac{1}{2}\ln(r^2 + \eps^2)  + \frac{\eps^2}{r^2 + \eps^2} \\
+	h_2(r) &=& \frac{1}{r^2 + \eps^2}.
+	}
+	We write the kernel action on a vector force $\bg=[g_1,g_2]$:
+	\bee{
+	(\Ge\bg)_i = \frac{1}{4\pi\mu} \left(  h_1(r) g_i + h_2(r)(\ell_i - \ell_i')[\bg \cdot (\bl - \bl')] \right).\label{eqn:kernact}
+	}
+	
+	The regularized kernel allows for simplified integration schemes, and the calculation of velocity fields due to (nearly) point forces. The details of the derivation of this kernel are elsewhere. 
+	
+	\section{The term $\nabla_a \bv$}
+	The first term in the evolution equation for $\bP$ contains a spatial derivative of the Stokeslet kernel. This leads to a more singular term than the kernel in the Stokes equation. We calculate this derivative analytically. Supposing our forces to be sufficiently smooth, we may exchange differentiation and integration:
+	\baas{
+	\nabla_a \bv_i &=& \nabla_a \int_{\Omega(0)} (\Ge(\bl - \bl') \bg(\ba'))_i \;d\ba' \\
+	&=& \int_{\Omega(0)} \nabla_a (\Ge(\bl - \bl') \bg(\ba'))_i \;d\ba',
+	}
+	where we let $\bg(\ba) := \beta \nabla_{a} \cdot \bP(\ba,t) + \ff(\bl(\ba,t),t)$. Note that the integrand depends on $\ba$ only through $\Ge$. Using Eq.~\eqref{eqn:kernact}, the derivative of the product is:
+	\baas{
+	(\nabla_a \Ge\bg)_{ik} &=& \pd{(\Ge\bg)_i}{a_k} \\
+	&=&  \frac{1}{4\pi\mu} \,\pd{\ell_j}{a_k} \, \pd{}{\ell_j}\left(  h_1(r) g_i + h_2(r)(\ell_i - \ell_i')[\bg \cdot (\bl - \bl')] \right) \\
+	&=& \frac{F_{jk}}{4\pi\mu}\pd{}{\ell_j}\left(  h_1(r) g_i + h_2(r)(\ell_i - \ell_i')[\bg \cdot (\bl - \bl')] \right),
+	}
+	where $F_{jk}$ is the $jk$-th component of the deformation tensor and we assume summation over $j$. In order to take the derivative above, we note that $dr/d\ell_j = (\ell_j - \ell_j')/r$:
+	\baas{
+	(\nabla_a \Ge\bg)_{ik} &=& \frac{F_{jk}}{4\pi\mu}\left(  \frac{h_1'(r)}{r} (\ell_j - \ell_j') g_i + \frac{h_2'(r)}{r} (\ell_j - \ell_j')(\ell_i - \ell_i')[\bg \cdot (\bl - \bl')] \right) \\
+	&&+ \frac{F_{jk}}{4\pi\mu}\left( \delta_{ij} h_2(r)[\bg \cdot (\bl - \bl')] + h_2(r)(\ell_i - \ell_i')g_j\right) \\
+	&=& \frac{1}{4\pi\mu} \left( \frac{h_1'(r)}{r} g_i (\bF^T(\bl) (\bl - \bl'))_k +  \frac{h_2'(r)}{r} (\ell_i - \ell_i')[\bg \cdot (\bl - \bl')] (\bF^T(\bl) (\bl - \bl'))_k \right) \\
+	&&+ \frac{1}{4\pi\mu} \left( h_2(r)[\bg \cdot (\bl - \bl')]F_{ik}(\bl) +  h_2(r)(\ell_i - \ell_i') (\bF^T(\bl) \bg)_k  \right),
+	}
+	where the term $(\bF^T(\bl) (\bl - \bl'))_k$ is the $k$-th component of the matrix multiplication $\bF^T (\bl - \bl')$ and we have emphasized the dependence of $\bF^T$ on $\bl$ (as opposed to $\bl'$). Also, $\delta_{ij} = 1$ iff $i=j$ and $\delta_{ij}=0$ otherwise (the Kronecker delta), and the derivatives of the $h_i$ functions are
+	\baas{
+	\frac{h_2'(r)}{r} &=& - \frac{2 r}{r(r^2+\eps^2)^2} \\
+	&=& -\frac{2}{(r^2+\eps^2)^2} \\
+	\frac{h_1'(r)}{r} &=& -\frac{r}{r(r^2+\eps^2)} + \eps^2 \frac{h_2'(r)}{r} \\
+	&=& -\frac{1}{r^2+\eps^2} -  \frac{2\eps^2}{(r^2+\eps^2)^2}.
+	}
+	
+	We will call the new kernel $\Ge^D$, where $(\Ge^D\bg)_{ik} \equiv (\nabla_a \Ge\bg)_{ik}$. The final system of equations in terms of $\bl$ and $\bP$ is 
+	\baa{
+	\pd{\bl}{t}(\ba,t) &=& \int_{\Omega(0)} \Ge(\bl(\ba,t) - \bl(\ba',t)) \left( \beta \nabla_{a'} \cdot \bP(\ba',t) + \ff(\bl(\ba',t),t) \right) d\ba' \label{eqn:l}\\
+	\pd{\bP}{t} &=& \left(\int_{\Omega(0)} \Ge^D(\bl(\ba,t) - \bl(\ba',t)) \left( \beta \nabla_{a'} \cdot \bP(\ba',t) + \ff(\bl(\ba',t),t) \right) d\ba' \right)\left(\nabla_a \bl \right)^{-1}\bP \nonumber\\
+	&-& Wi^{-1}\left( \bP - \left(\nabla_a \bl \right)^{-T} \right). \label{eqn:P}
+	}
+	
+	
+	\section{Numerical Implementation}
+	
+	Let $\Delta t$ be the time step, and let the superscript $n$ denote the $n$-th time step. Let $\xi=\Delta x = \Delta y$ be the spatial scaling in the reference frame $\ba$ (we begin in 2D). We denote the location of the $ij$-th point in the reference frame at time $n$ by $\bl^{n,i,j}$. We need to be able to calculate $\nabla_a \bl^{n,i,j}$, $\nabla_a (\partial \bl^{n,i,j}/\partial t)$, and the divergence of the Piola-Kirchoff stress tensor, $\nabla_a \cdot \bP^{n,i,j}$. In the following, a subscript of $1$ or $2$ refers to the vector component in the first or second coordinate direction respectively. Analogously, subscript pairs such as $11$, $12$, etc. denote matrix entries.
+	
+	\subsection{Spatial Derivatives}\label{sec:spdiff}
+	
+	Within the domain itself, we will use center differencing for spatial derivatives. At the domain boundaries, we can take one-sided derivatives or impose Neumann boundary conditions. We use a center difference approximation for the deformation matrix:
+	\bees{
+	\bF^{n,i,j} = \nabla_a \bl^{n,i,j} \approx \frac{1}{2\xi}\begin{bmatrix} \ell^{n,i+1,j}_1 - \ell^{n,i-1,j}_1, & \ell^{n,i,j+1}_1 - \ell^{n,i,j-1}_1 \\ \ell^{n,i+1,j}_2 - \ell^{n,i-1,j}_2, & \ell^{n,i,j+1}_2 - \ell^{n,i,j-1}_2 \end{bmatrix}.
+	}
+	The inverse of this matrix is also needed, and may be calculated by the well-known formula $\bA = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \Rightarrow \bA^{-1} = \dfrac{1}{ad -bc}\begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$, since the deformation matrix $\nabla_a \bl$ is invertible by the incompressibility assumption.	
+	We use a center difference approximation also for the divergence of the stress tensor $\bP$:
+	\bees{
+	\nabla_a \cdot \bP^{n,i,j} \approx \frac{1}{2\xi}\begin{bmatrix} P^{n,i+1,j}_{11} - P^{n,i-1,j}_{11} + P^{n,i,j+1}_{12} - P^{n,i,j-1}_{12}  \\ P^{n,i+1,j}_{21} - P^{n,i-1,j}_{21} + P^{n,i,j+1}_{22} - P^{n,i,j-1}_{22}  \end{bmatrix}.
+	}
+	
+	\subsection{Quadrature}\label{sec:quad}
+	
+	The quadrature is composed of two pieces:
+	\bees{
+	\pd{\bl}{t}(\ba,t) = \beta \int_{\Omega(0)} \Ge(\bl(\ba,t) - \bl(\ba',t)) \nabla_{a'} \cdot \bP(\ba',t) d\ba' + \int_{\partial\Omega(0)} \Ge(\bl(\ba,t) - \bl(\ba',t))\ff(\bl(\ba',t),t) d\ba',
+	}
+	where $\Ge$ may be replaced by $\Ge^D$ for the integration in the stress evolution equation. The first integral may be calculated using a midpoint rule:
+	\baas{
+	\int_{\Omega(0)} \Ge(\bl(\ba,t) - \bl(\ba',t)) \nabla_{a'} \cdot \bP(\ba',t) d\ba' &\approx& \xi^2 \sum\limits_i\sum\limits_j\Ge(\bl^n - \bl^{n,i,j})\bp^{n,i,j} ,
+	}
+	where $\bp^{n,i,j}$ is shorthand for $\nabla_{a'} \cdot \bP^{n,i,j}$, and $\bl(\ba,t) = \bl^n$ is some point of interest in the domain.  
+	
+	The limits of the second integral are reduced because nonzero forces only occur over internal boundaries in the domain. When the collection $\ff$ in the second integral represents discrete points, we use the approximation
+	\bees{
+	\int_{\partial\Omega(0)} \Ge(\bl(\ba,t) - \bl(\ba',t))\ff(\bl(\ba',t),t) d\ba' \approx \sum_k \Ge(\bl^n - \bl^{n,k})\ff^{n,k}, 
+	}
+	where $\ff^{n,k}$ is the forcing at the $k$-th point on the boundary at time $n$. When the discretized boundary represents a curve, we may opt to multiply the forcing by the spacing between the boundary points, $\zeta$, to represent a midpoint rule. $\zeta$ is not required to be equal to $\xi$, nor are the internal boundary points required to fall on grid points. 
+	
+	The forcing $\ff(\bl(\ba,t),t)$ may be a prescribed function of space over the internal boundary points. Alternatively, one may choose to prescribe the velocity at the internal boundaries, in which case it will be necessary to solve an integral equation for the forces at each moment in time.
+	
+	\subsection{Time Derivative}
+	
+	We will solve the coupled equations \eqref{eqn:l} and \eqref{eqn:P} with the approximations given in Sections \ref{sec:spdiff} and \ref{sec:quad} using a fourth order Runge-Kutta solver (or some other high accuracy solver). We choose for initial conditions $\bl(\ba,0) = \ba$ and $\bP(\ba,0) = \mathbf{I}$. 
+
+	\pagebreak
+	\appendix
+	\section{Notation} 
+	
+	\begin{center}
+	\begin{tabular}{|ll|}
+		\hline
+		uppercase Greek &   \\
+		\hline
+		$\Omega$ & domain $ \in R^n$\\
+		$\Delta$ & change in a variable; e.g. $\Delta t$ is a time step\\
+		\hline
+		\multicolumn{2}{|l|}{lowercase Greek, uppercase Latin, and upper/lower Latin pairs} \\
+		&  scalar constants \\
+		\hline
+		$\rho$ & fluid density\\
+		$\mu$ & fluid dynamic viscosity\\
+		$\tau$ & polymer relaxation time\\
+		$\beta$ & dimensionless ratio of stresses, $\beta = LG/\mu V$\\
+		$\xi$ & spatial discretization, $\xi = \Delta x$\\
+		\hline
+		$G$ & extra isotropic polymer stress\\
+		$L$ & characteristic length scale\\
+		$V$ & characteristic velocity \\
+		$N$ & number of points in the discretized spatial domain \\
+		\hline
+		$Re$ & Reynolds number, $ Re = \rho V L/ \mu$ \\
+		$Wi$ & Weissenberg number, $ Wi = \tau/(L/V)$ \\
+		\hline
+		lowercase Latin &  scalar variable OR scalar-valued function\\
+		\hline
+		$t$  & time variable \\
+		$p(\bx,t)$ & pressure \\
+		$\jmath(\bl,t)$ & determinant of the flow map, $\det \bF$ \\
+		\hline
+		lowercase bold-face Latin &  vector variable OR vector-valued function \\
+		\hline
+		$\bx$ & Eulerian spatial coordinates \\
+		$\ba$ & Lagrangian variable \\
+		$\bl(\ba,t)$ & Lagrangian flow map \\
+		$\bu(\bx,t)$ & Eulerian velocity field \\
+		$\bv(\ba,t)$ & Langrangian velocity field, $\bv(\ba,t) = \bu(\bl(\ba,t),t) = \partial \bl /\partial t$\\
+		$\ff(\bx,t)$ & body forces acting on fluid \\
+		\hline
+		uppercase bold-face Latin &  tensor- or matrix-valued function, possibly constant \\
+		\hline
+		$\bI$ & identity matrix\\
+		$\bS(\bx,t)$ & ``extra" stress tensor from polymers in the fluid \\
+		$\bF(\bl,t)$ & Jacobian of the flow map, $\bF = \nabla_a \bl$ \\
+		$\bP(\bl,t)$ & first Piola-Kirchoff stress tensor, $\bP = \bS\bF^{-T}$ \\
+		\hline
+		subscripted lower case Latin letters &  components \\
+		\hline
+		$x_j $ & the $ j$-th component of the vector $\bx$ \\
+		$S_{ij}$ & the $ij$-th component of the tensor $\bS$ \\		
+		\hline
+		superscripted lower case Latin letters &  discrete time and space values \\
+		\hline
+		$\bl^{n} $ & the vector $\bl$ at time step $n$ \\
+		$\bP^{n+1,k} $ & the $k$-th tensor $\bP$ (w.r.t the reference frame $\ba$) at time step $n+1$ \\
+		\hline
+		other superscripts &  operators \\
+		\hline
+		$\bP^{-1}$ & inverse \\
+		$\bP^{T} $ & transpose \\
+		\hline
+	\end{tabular}
+\begin{tabular}{|ll|}
+	\hline
+		operators & \\
+		\hline
+		$\cdot$ & dot product \\
+		$\bS \bA$ & matrix multiplication between $\bS$ and $\bA$ \\
+		$\nabla_x$ & Eulerian spatial gradient \\
+		$\nabla_a$ & Lagrangian spatial gradient \\
+		$\nabla_q \cdot$ & divergence; $q = x,\,a$ \\
+		$\nabla_q^2$ & Laplacian operator, $\nabla_q^2 = \nabla_q \cdot \nabla_q$; $q = x,\,a$ \\
+		$\partial/\partial q$ &  partial derivative with respect to the variable $q$ \\
+		$\text{D}/\text{D}t$ &  material derivative, $\text{D}/\text{D}t \equiv \pd{}{t} + \bu \cdot \nabla_x$ \\
+		$\bS^\nabla$ & upper convected derivative acting on $\bS$, $ \bS^\nabla \equiv \frac{\text{D} \bS}{\text{D}t} - \left((\nabla_x\bu)\,\bS + \bS\,(\nabla_x\bu)^T \right)$\\
+		& \\
+		\hline
+	\end{tabular}
+\end{center}
+	
+	
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
