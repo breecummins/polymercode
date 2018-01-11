@@ -1,0 +1,201 @@
+\documentclass[12pt]{article}
+
+\usepackage[top=0.75in,bottom=0.75in,left=0.5in,right=0.5in]{geometry}
+\usepackage{amsmath,amssymb,multirow,graphicx}
+
+\newcommand{\bee}[1]{\begin{equation} #1 \end{equation}}
+\newcommand{\baa}[1]{\begin{eqnarray} #1 \end{eqnarray}}
+\newcommand{\bees}[1]{\begin{equation*} #1 \end{equation*}}
+\newcommand{\baas}[1]{\begin{eqnarray*} #1 \end{eqnarray*}}
+
+\newcommand{\pd}[2]{\ensuremath{\frac{\partial #1}{\partial #2}}}
+\newcommand{\dd}[2]{\ensuremath{\frac{d #1}{d #2}}}
+
+\newcommand{\bx}{{\mathbf x}}
+\newcommand{\ba}{{\mathbf a}}
+\newcommand{\bl}{{\pmb \ell}}
+\newcommand{\bu}{{\mathbf u}}
+\newcommand{\bv}{{\mathbf v}}
+\newcommand{\bq}{{\mathbf q}}
+\newcommand{\bp}{{\mathbf p}}
+\newcommand{\bg}{{\mathbf g}}
+\newcommand{\ff}{{\mathbf f}}
+\newcommand{\bS}{{\mathbf S}}
+\newcommand{\bI}{{\mathbf I}}
+\newcommand{\bA}{{\mathbf A}}
+\newcommand{\bG}{{\mathbf G}}
+\newcommand{\bF}{{\mathbf F}}
+\newcommand{\bP}{{\mathbf P}}
+\newcommand{\bQ}{{\mathbf Q}}
+\newcommand{\bX}{{\mathbf X}}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\Ge}{\bG_\eps}
+\newcommand{\Gec}{G_\eps}
+
+
+\begin{document}
+
+\section*{Curvature forces}
+
+This is a derivation of the forces along a one dimensional organism swimming in two dimensions. The forces arise because the organism is presumed to have an ideal shape that it is striving for, but it does not reach this shape in reality. The difference between the actual and desired shapes is penalized, and this penalty gives rise to forces along the organism that affect the fluid flow. In this way, the organism's swimming speed is the result of a shape constraint and interaction with the fluid, rather than an imposed motion.
+
+In order for the following derivation to make sense, we assume that the organism is inextensible. This requires another set of forces to enforce the inextensibility constraint. The derivation of these forces is outlined in the SpringForces.pdf document.
+
+We begin by defining an energy. Fauci and Peskin (1988) state that choosing an energy formulation that is independent of translation and rotation guarantees conservation of linear and angular momentum. We choose a similar formulation to theirs:
+
+\bee{
+E(t) = \int_\Gamma \frac{S}{2}\left( \kappa_{true}(s,t) - \kappa_{target}(s,t) \right)^2 \, ds, \label{eqn:energy}
+}
+where $S$ is a constant penalty term (or spring constant), $\kappa_{true}$ is the curvature of the organism at a specific time, and $\kappa_{target}$ is the desired curvature at the same time. The integration occurs with respect to arclength $s$ over the one dimensional organism described by the curve $\Gamma$. In reality, we have a discrete set of points, and so we discretize Eq.~\eqref{eqn:energy}:
+
+\bee{
+E(t) = \frac{S}{2}\sum_{k}\left( \kappa_{true}(s_k,t) - \kappa_{target}(s_k,t) \right)^2 \, \Delta s,\label{eqn:energydisc}
+}
+assuming a constant spacing $\Delta s$ between discretized points in arclength, $s_k$. The material points of the organism in two dimensions will be denoted $\mathbf{X}_k = (x_k, y_k)$.
+
+We now require formulae for the curvatures. For the desired shape, we choose a sine wave with linearly increasing amplitude from head to tail:
+
+\bees{
+c(s,t) = as\sin(\lambda s-\omega t),
+}
+where $a$, $\lambda $, and $\omega$ are constants. For this continuous function, the curvature is given by 
+
+\bees{
+\kappa = \frac{c''(s)}{(1+(c'(s))^2)^{3/2}}.
+}
+The curvature is allowed to be negative, because we want to match the direction of the bend as well as the magnitude of the bend. In the discrete version, we have 
+
+\bees{
+\kappa = \frac{c''(s_k)}{(\Delta s)^{3}}.
+}
+So $\kappa_{target}$ is 
+\begin{align*}
+\kappa_{target}(s_k,t) &= \frac{2\lambda a\cos(\lambda s_k-\omega t) - a\lambda ^2s_k\sin(\lambda s_k-wt)}{(\Delta s)^3}.\label{eqn:kappatarget}
+\end{align*}
+
+\pagebreak
+
+We need a discrete approximation to curvature to calculate $\kappa_{true}$ at each time step. For a continuous curve in two dimensions, the curvature is given by
+
+\bees{
+\kappa = \frac{\hat{z} \cdot (\bX'(s)\times\bX''(s))}{|\bX'(s)|^3},
+}
+where $\hat{z}$ is the unit vector in the $z$ direction and once again the curvature is allowed to be negative to represent the direction of the bend. In the discretized (inextensible) version, the arclength is known to be $|\bX'(s)|^3 = (\Delta s)^3$. It remains to find a discretized version of the cross product. It turns out that 
+
+\begin{align*}
+\frac{-\hat{z} \cdot (\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1})}{(\Delta s)^3} &= \hat{z} \cdot (\bX_k'\times\bX_k'') + O(\Delta s)
+\end{align*}
+
+To see this, we expand $\bX_{k+1}$ and $\bX_{k-1}$ about $\bX_k$:
+
+\begin{align*}
+	\bX_{k+1} &= \bX_k + \Delta s \bX'_k + \frac{(\Delta s)^2}{2}\bX''_k + O((\Delta s)^3) \\
+	\bX_{k-1} &= \bX_k - \Delta s \bX'_k + \frac{(\Delta s)^2}{2}\bX''_k + O((\Delta s)^3) \\
+	\Rightarrow \bX_{k+1}-\bX_k  &= \Delta s \bX'_k + \frac{(\Delta s)^2}{2}\bX''_k + O((\Delta s)^3) \\
+	\Rightarrow \bX_{k}-\bX_{k-1} &= \Delta s \bX'_k - \frac{(\Delta s)^2}{2}\bX''_k + O((\Delta s)^3).	
+\end{align*}
+
+Then, since any vector cross itself is zero, we have
+
+\begin{align*}
+(\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1}) &= - \frac{(\Delta s)^3}{2}\left(\bX'_k \times \bX''_k \right) + \frac{(\Delta s)^3}{2}\left(\bX''_k \times \bX'_k \right) + O((\Delta s)^4) \\
+&= - (\Delta s)^3 \left(\bX'_k \times \bX''_k \right) + O((\Delta s)^4) \\
+\Rightarrow \frac{-\hat{z} \cdot ((\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1})}{(\Delta s)^3} &= \hat{z} \cdot (\bX_k'\times\bX_k'') + O(\Delta s),
+\end{align*}
+as claimed. So we approximate the discretized curvature as 
+
+\bee{
+\kappa_{true} \approx \frac{-\hat{z} \cdot (\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1})}{(\Delta s)^6}. \label{eqn:kappatrue}
+}
+Then the discretized energy  at a given time becomes
+
+\bee{
+E = \frac{S}{2}\sum_{k}\left( \frac{-\hat{z} \cdot (\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1})}{(\Delta s)^6} - \frac{c''(s_k)}{(\Delta s)^3} \right)^2 \, \Delta s.\label{eqn:energydisc2}
+}
+Notice that if we absorb a factor of $1/(\Delta s)^3$ into the spring constant $S$, we have an energy formulation of 
+
+\bee{
+E = \frac{\hat{S}}{2}\sum_{k}\left( \frac{-\hat{z} \cdot (\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1})}{(\Delta s)^3} - c''(s_k) \right)^2 \Delta s,\label{eqn:energydisc3}
+}
+where $\hat{S} = S/(\Delta s)^3$.
+
+\pagebreak
+
+The forces that arise from this energy are given by
+
+\begin{align*}
+	F_{x,j} = -\pd{E}{x_j}, \quad F_{y,j} = -\pd{E}{y_j},
+\end{align*}
+where $\bX_j = (x_j,y_j)$. The target curvature is independent of $x_k$ and $y_k$, so we need only the derivatives of the discrete cross product:
+
+\begin{align*}
+	-\pd{E}{x_j} &= \hat{S}\Delta s \sum_{k}\left( -\frac{\hat{z} \cdot (\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1})}{(\Delta s)^3} - c''(s_k) \right) \pd{}{x_j}\frac{\hat{z} \cdot (\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1})}{(\Delta s)^3},
+\end{align*}
+and similarly for $\partial/\partial y_k$. The cross product in terms of $x_k$ and $y_k$ is:
+
+\begin{align*}
+	\hat{z} \cdot (\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1}) &= (x_{k+1} - x_k)(y_k-y_{k-1}) - (y_{k+1} - y_{k})(x_k-x_{k-1}).
+\end{align*}
+There are three terms that involve $x_j$ when we take the derivative:
+
+\begin{align*}
+\pd{}{x_j}\sum_k\left(\hat{z} \cdot (\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1})\right) &= \pd{}{x_j}\left( (x_{j+1} - x_j)(y_j-y_{j-1}) - (y_{j+1} - y_{j})(x_j-x_{j-1})\right) \\
+& + \pd{}{x_j}\left( (x_{j+2} - x_{j+1})(y_{j+1}-y_{j}) - (y_{j+2} - y_{j+1})(x_{j+1}-x_{j})\right) \\
+& + \pd{}{x_j}\left((x_{j} - x_{j-1})(y_{j-1}-y_{j-2}) - (y_{j} - y_{j-1})(x_{j-1}-x_{j-2}) \right) \\
+&= - (y_j-y_{j-1}) - (y_{j+1} - y_{j}) + (y_{j+2} - y_{j+1}) + (y_{j-1}-y_{j-2}).
+\end{align*}
+Similarly,
+
+\begin{align*}
+	\pd{}{y_j}\sum_k\left(\hat{z} \cdot (\bX_{k+1}-\bX_k)\times(\bX_{k}-\bX_{k-1})\right) &= (x_{j+1} - x_j) + (x_j-x_{j-1}) - (x_{j+2} - x_{j+1}) - (x_{j-1}-x_{j-2}).
+\end{align*}
+
+So the forces are given by 
+\begin{align*}
+	F_{x,j} &= \left(\frac{\hat{S}}{(\Delta s)^2}\sum_{k}C_k\right) \left(- (y_j-y_{j-1}) - (y_{j+1} - y_{j}) + (y_{j+2} - y_{j+1}) + (y_{j-1}-y_{j-2})\right) \\
+	F_{y,j} &= \left(\frac{\hat{S}}{(\Delta s)^2}\sum_{k}C_k\right) \left((x_{j+1} - x_j) + (x_j-x_{j-1}) - (x_{j+2} - x_{j+1}) - (x_{j-1}-x_{j-2})\right),
+\end{align*}
+where
+
+\bees{
+C_k = \left( \frac{-(x_{k+1} - x_k)(y_k-y_{k-1}) + (y_{k+1} - y{k})(x_k-x_{k-1})}{(\Delta s)^3} - c''(s_k) \right).
+}
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
